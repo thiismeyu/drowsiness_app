@@ -7,6 +7,9 @@ from config import MODEL_PATHS, CLASS_NAMES, NUM_CLASSES, CONFIDENCE_MIN
 
 
 def download_models():
+    import os
+    import gdown
+
     os.makedirs("models", exist_ok=True)
 
     models = {
@@ -20,15 +23,15 @@ def download_models():
 
         if not os.path.exists(path):
             url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
             print(f"Downloading {filename}...")
 
             try:
-                gdown.download(url, path, quiet=False)
+                gdown.download(url, path, quiet=False, fuzzy=True)
             except Exception as e:
                 print(f"Gagal download {filename}: {e}")
 
-        else:
-            print(f"{filename} sudah ada ✔")
+    print("ISI MODELS SETELAH DOWNLOAD:", os.listdir("models"))
 
 
 class DrowsinessPredictor:
@@ -54,7 +57,8 @@ class DrowsinessPredictor:
             try:
                 model = tf.keras.models.load_model(
                     path,
-                    compile=False   # 🔥 WAJIB
+                    compile=False,
+                    safe_mode=False
                 )
 
                 self.models[name] = model
