@@ -10,9 +10,9 @@ BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 MODEL_PATHS = {
-    "InceptionV3" : os.path.join(MODELS_DIR, "InceptionV3_after_finetune.keras"),
-    "MobileNetV2" : os.path.join(MODELS_DIR, "MobileNetV2_after_finetune.keras"),
-    "ResNet50V2"  : os.path.join(MODELS_DIR, "ResNet50V2_after_finetune.keras"),
+    "InceptionV3" : os.path.join(MODELS_DIR, "InceptionV3_after_finetune.h5"),
+    "MobileNetV2" : os.path.join(MODELS_DIR, "MobileNetV2_after_finetune.h5"),
+    "ResNet50V2"  : os.path.join(MODELS_DIR, "ResNet50V2_after_finetune.h5"),
 }
 
 # ── KELAS ─────────────────────────────────────────────────────
