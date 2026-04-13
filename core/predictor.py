@@ -11,12 +11,20 @@ from config import MODEL_PATHS, CLASS_NAMES, NUM_CLASSES, CONFIDENCE_MIN
 import os
 import gdown
 
+import requests
 
+def download_file(file_id, output_path):
+    URL = "https://drive.google.com/uc?export=download"
+    session = requests.Session()
+
+    response = session.get(URL, params={"id": file_id}, stream=True)
+    
+    with open(output_path, "wb") as f:
+        for chunk in response.iter_content(1024 * 1024):
+            if chunk:
+                f.write(chunk)
 
 def download_models():
-    import os
-    import gdown
-
     os.makedirs("models", exist_ok=True)
 
     models = {
@@ -26,18 +34,14 @@ def download_models():
     }
 
     for filename, file_id in models.items():
-        output = os.path.join("models", filename)
+        path = os.path.join("models", filename)
 
-        if not os.path.exists(output):
-            url = f"https://drive.google.com/uc?id={file_id}"
-            print(f"Downloading {filename} from {url}...")
+        if not os.path.exists(path):
+            print(f"Downloading {filename}...")
+            download_file(file_id, path)
 
-            gdown.download(url, output, quiet=False)
-
-            # 🔥 TAMBAHAN PENTING
-            if not os.path.exists(output):
+            if not os.path.exists(path):
                 raise RuntimeError(f"Gagal download {filename}")
-
 class DrowsinessPredictor:
     """
     Mengelola 3 model CNN dan melakukan weighted voting.
