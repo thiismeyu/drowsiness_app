@@ -1,13 +1,9 @@
-streamlit==1.33.0
-tensorflow-cpu==2.16.1
-opencv-python-headless==4.9.0.80
-mediapipe==0.10.14
+streamlit
 numpy
-Pillow
+tensorflow==2.16.1
+opencv-python-headless==4.8.1.78
+mediapipe
 matplotlib
-scikit-learn
-gdown >= 4.7.3
 requests
-
-
+gdown
 huggingface_hub

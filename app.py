@@ -15,6 +15,12 @@ from core.predictor import DrowsinessPredictor
 from core.perclos   import PerclosDetector
 from alarm.alarm    import AlarmManager
 
+try:
+    import cv2
+except Exception as e:
+    print("CV2 ERROR:", e)
+    cv2 = None
+
 # ─── load CSS helper ────────────────────────────────────────
 def load_css(path):
     p = Path(path)
