@@ -7,30 +7,32 @@ from config import MODEL_PATHS, CLASS_NAMES, NUM_CLASSES, CONFIDENCE_MIN
 
 
 def download_models():
-    import gdown
+    import os
+    import requests
+
     os.makedirs("models", exist_ok=True)
 
     models = {
-        "InceptionV3_after_finetune.h5":  "1ER1yYUP682oklmROkXA1wixVZZGIJkrF",
-        "MobileNetV2_after_finetune.h5":  "1vOj3sg26YOfGQzAGLxAEFI8bP_vWkP5V",
-        "ResNet50V2_after_finetune.h5":   "1bMLFBiJZSfOYHTehXf_EVryPHoxckPt",
+        "InceptionV3_after_finetune.h5": "https://huggingface.co/ayuuuuuuu/drowsiness-model/resolve/main/InceptionV3_after_finetune.h5",
+        "MobileNetV2_after_finetune.h5": "https://huggingface.co/ayuuuuuuu/drowsiness-model/resolve/main/MobileNetV2_after_finetune.h5",
+        "ResNet50V2_after_finetune.h5": "https://huggingface.co/ayuuuuuuu/drowsiness-model/resolve/main/ResNet50V2_after_finetune.h5",
     }
 
-    for filename, file_id in models.items():
+    for filename, url in models.items():
         path = os.path.join("models", filename)
+
         if not os.path.exists(path):
             print(f"Downloading {filename}...")
+
             try:
-                # Pakai format ini — paling stabil untuk file besar
-                gdown.download(
-                    id=file_id,        # ← pakai parameter id, bukan url
-                    output=path,
-                    quiet=False,
-                    fuzzy=True,
-                    resume=True        # ← lanjut kalau putus di tengah
-                )
+                r = requests.get(url)
+                with open(path, "wb") as f:
+                    f.write(r.content)
+
             except Exception as e:
-                print(f"[ERROR] {filename}: {e}")
+                print(f"Gagal download {filename}: {e}")
+
+    print("ISI MODELS:", os.listdir("models"))
 
 
 class DrowsinessPredictor:
