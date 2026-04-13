@@ -14,6 +14,9 @@ import gdown
 
 
 def download_models():
+    import os
+    import gdown
+
     os.makedirs("models", exist_ok=True)
 
     models = {
@@ -23,17 +26,17 @@ def download_models():
     }
 
     for filename, file_id in models.items():
-        output_path = os.path.join("models", filename)
+        output = os.path.join("models", filename)
 
-        if not os.path.exists(output_path):
+        if not os.path.exists(output):
             url = f"https://drive.google.com/uc?id={file_id}"
-            print(f"Downloading {filename}...")
-            try:
-                gdown.download(url, output_path, quiet=False)
-            except Exception as e:
-                print(f"Gagal download {filename}: {e}")
-        else:
-            print(f"{filename} sudah ada ✔")
+            print(f"Downloading {filename} from {url}...")
+
+            gdown.download(url, output, quiet=False)
+
+            # 🔥 TAMBAHAN PENTING
+            if not os.path.exists(output):
+                raise RuntimeError(f"Gagal download {filename}")
 
 class DrowsinessPredictor:
     """
