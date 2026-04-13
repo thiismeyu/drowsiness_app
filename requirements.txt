@@ -1,7 +1,7 @@
-tensorflow==2.16.1
+streamlit==1.33.0
+tensorflow-cpu==2.16.1
 opencv-python-headless
 mediapipe==0.10.14
-streamlit==1.33.0
 numpy
 Pillow
 matplotlib
