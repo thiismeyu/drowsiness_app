@@ -7,31 +7,30 @@ from config import MODEL_PATHS, CLASS_NAMES, NUM_CLASSES, CONFIDENCE_MIN
 
 
 def download_models():
-    import os
     import gdown
-
     os.makedirs("models", exist_ok=True)
 
     models = {
-        "InceptionV3_after_finetune.h5": "1ER1yYUP682oklmROkXA1wixVZZGIJkrF",
-        "MobileNetV2_after_finetune.h5": "1vOj3sg26YOfGQzAGLxAEFI8bP_vWkP5V",
-        "ResNet50V2_after_finetune.h5": "1bMLFBiJZSfOYHTehXf_EVryPHoxckPt",
+        "InceptionV3_after_finetune.h5":  "1ER1yYUP682oklmROkXA1wixVZZGIJkrF",
+        "MobileNetV2_after_finetune.h5":  "1vOj3sg26YOfGQzAGLxAEFI8bP_vWkP5V",
+        "ResNet50V2_after_finetune.h5":   "1bMLFBiJZSfOYHTehXf_EVryPHoxckPt",
     }
 
     for filename, file_id in models.items():
         path = os.path.join("models", filename)
-
         if not os.path.exists(path):
-            url = f"https://drive.google.com/uc?export=download&id={file_id}"
-
             print(f"Downloading {filename}...")
-
             try:
-                gdown.download(url, path, quiet=False, fuzzy=True)
+                # Pakai format ini — paling stabil untuk file besar
+                gdown.download(
+                    id=file_id,        # ← pakai parameter id, bukan url
+                    output=path,
+                    quiet=False,
+                    fuzzy=True,
+                    resume=True        # ← lanjut kalau putus di tengah
+                )
             except Exception as e:
-                print(f"Gagal download {filename}: {e}")
-
-    print("ISI MODELS SETELAH DOWNLOAD:", os.listdir("models"))
+                print(f"[ERROR] {filename}: {e}")
 
 
 class DrowsinessPredictor:
