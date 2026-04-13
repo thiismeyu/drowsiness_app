@@ -8,3 +8,6 @@ matplotlib
 scikit-learn
 gdown >= 4.7.3
 requests
+
+
+huggingface_hub
