@@ -50,14 +50,15 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("**📥 Sumber Input**")
-    input_mode = st.radio("Pilih sumber:", ["📷 Kamera Live","🎬 Upload Video"], index=0)
-    uploaded_video=None; camera_index=0
-    if input_mode=="🎬 Upload Video":
-        uploaded_video=st.file_uploader("Upload video",type=["mp4","avi","mov","mkv"])
-        if uploaded_video: st.success(f"✓ {uploaded_video.name}")
-        st.caption("💡 Alarm tetap berbunyi saat kantuk terdeteksi.")
-    else:
-        camera_index=st.number_input("Index kamera",0,5,0,1)
+    input_mode = st.radio("Pilih sumber:", ["📷 Kamera web","🎬 Upload Video"], index=0)
+    uploaded_video = None
+
+    if input_mode == "🎬 Upload Video":
+        uploaded_video = st.file_uploader("Upload video", type=["mp4","avi","mov"])
+        
+  
+    
+        
 
     st.markdown("---")
     st.markdown("**🎚️ Threshold**")
@@ -194,7 +195,7 @@ def process_frame(frame,fd,pred,pd_,al,fn=None,tf=None):
 
 # ─── main layout ────────────────────────────────────────────
 st.title("🛡️ DriveGuard — Deteksi Kantuk Pengendara")
-ml=(f"📷 Kamera Live" if input_mode=="📷 Kamera Live"
+ml=(f"📷 Kamera web" if input_mode=="📷 Kamera web"
     else f"🎬 {uploaded_video.name if uploaded_video else 'Belum diupload'}")
 st.markdown(f'<span class="input-badge">{ml}</span>',unsafe_allow_html=True)
 st.caption("InceptionV3 · MobileNetV2 · ResNet50V2  —  MediaPipe FaceMesh + PERCLOS")
@@ -216,7 +217,7 @@ with ci_:
 
 cs,ce=st.columns(2)
 with cs:
-    slbl="▶  Mulai Deteksi" if input_mode=="📷 Kamera Live" else "▶  Mulai Analisis Video"
+    slbl="▶  Mulai Deteksi"
     sbtn=st.button(slbl,type="primary",use_container_width=True)
 with ce:
     stbtn=st.button("⏹  Stop",use_container_width=True)
@@ -300,28 +301,35 @@ if st.session_state["running"]:
     perclos_det=PerclosDetector(perclos_th=perclos_th,yawn_th=yawn_th)
     prev_drowsy=False
 
-    if input_mode=="📷 Kamera Live":
-        cap=cv2.VideoCapture(int(camera_index),cv2.CAP_DSHOW)
-        if not cap.isOpened(): cap=cv2.VideoCapture(int(camera_index))
-        if not cap.isOpened():
-            st.error("❌ Kamera tidak dapat dibuka."); st.session_state["running"]=False
-        else:
-            cap.set(cv2.CAP_PROP_BUFFERSIZE,1); st.toast("✓ Kamera aktif",icon="📷")
-            add_event("Kamera aktif","ok")
-            while st.session_state["running"]:
-                ret,frame=cap.read()
-                if not ret: st.warning("Frame tidak terbaca."); break
-                frame=cv2.flip(frame,1)
-                fd2,state=process_frame(frame,face_detector,predictor,perclos_det,alarm)
-                st.session_state["frame_count"]+=1; fc2=st.session_state["frame_count"]
-                isd=state["p_state"].is_drowsy
-                if isd: st.session_state["drowsy_count"]+=1
-                if state["alarm_fired"]: st.session_state["alarm_count"]+=1
-                if isd and not prev_drowsy: add_event(f"KANTUK—{state['p_state'].drowsy_reason}","danger")
-                elif not isd and prev_drowsy: add_event("Kembali normal","ok")
-                if not state["face_found"] and fc2%30==0: add_event("Wajah tidak terdeteksi","warn")
-                prev_drowsy=isd; upd(fd2,state); time.sleep(0.03)
-            cap.release(); face_detector.close()
+    if input_mode=="📷 Kamera web":
+    
+        img = st.camera_input("📷 Ambil gambar dari kamera")
+
+        if img is not None:
+            st.session_state["last_img"] = img
+
+        if "last_img" in st.session_state:
+            bytes_data = st.session_state["last_img"].getvalue()
+            np_arr = np.frombuffer(bytes_data, np.uint8)
+            frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+            fd2,state = process_frame(
+                frame,
+                face_detector,
+                predictor,
+                perclos_det,
+                alarm
+            )
+
+            st.session_state["frame_count"] += 1
+
+            if state["p_state"].is_drowsy:
+                st.session_state["drowsy_count"] += 1
+
+            if state["alarm_fired"]:
+                st.session_state["alarm_count"] += 1
+
+            upd(fd2,state)
 
     elif input_mode=="🎬 Upload Video":
         if uploaded_video is None:

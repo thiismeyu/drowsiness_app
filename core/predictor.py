@@ -13,6 +13,9 @@ import gdown
 
 import requests
 
+import os
+import requests
+
 def download_file(file_id, output_path):
     URL = "https://drive.google.com/uc?export=download"
     session = requests.Session()
@@ -42,6 +45,7 @@ def download_models():
 
             if not os.path.exists(path):
                 raise RuntimeError(f"Gagal download {filename}")
+
 class DrowsinessPredictor:
     """
     Mengelola 3 model CNN dan melakukan weighted voting.
