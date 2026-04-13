@@ -1,9 +1,8 @@
-streamlit
-numpy
+streamlit==1.32.2
+numpy==1.26.4
 tensorflow==2.16.1
 opencv-python-headless==4.8.1.78
-mediapipe
-matplotlib
-requests
-gdown
-huggingface_hub
+mediapipe==0.10.9
+matplotlib==3.8.4
+requests==2.31.0
+gdown==5.1.0
