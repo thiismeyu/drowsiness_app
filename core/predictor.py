@@ -25,9 +25,17 @@ def download_models():
             print(f"Downloading {filename}...")
 
             try:
-                r = requests.get(url)
+                r = requests.get(url, stream=True)
+                if r.status_code != 200:
+                    print(f"Gagal download {filename}, status:", r.status_code)
+                    continue
+
                 with open(path, "wb") as f:
-                    f.write(r.content)
+                    for chunk in r.iter_content(1024):
+                        if chunk:
+                            f.write(chunk)
+
+                print(f"{filename} selesai ✔ size:", os.path.getsize(path))
 
             except Exception as e:
                 print(f"Gagal download {filename}: {e}")
@@ -45,9 +53,12 @@ class DrowsinessPredictor:
         self._load_models(val_accuracies)
 
     def _load_models(self, val_accuracies):
+        print("CEK FILE:", path, os.path.exists(path))
+        print("ISI MODELS:", os.listdir("models"))
 
         print("Memuat model CNN...")
         loaded_accs = {}
+        
 
         for name, path in MODEL_PATHS.items():
 
